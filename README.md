@@ -32,6 +32,27 @@ O diretório `dist` contém o site estático, pronto para uma hospedagem como Gi
 
 O movimento usa as animações do arquivo em uma faixa suave de voo. A visualização respeita a preferência do sistema por movimento reduzido e suspende a renderização fora da área visível ou com a aba em segundo plano. O site precisa de WebGL e apresenta uma opção de recarregamento em caso de falha gráfica.
 
+## Desempenho
+
+- Animação limitada a 30 quadros por segundo, ou 24 em dispositivos com recursos mais modestos.
+- Renderização limitada a 800 mil pixels, ou 450 mil em dispositivos modestos, independentemente da resolução da tela.
+- Redução automática da resolução e do limite de quadros se a máquina não acompanhar o ritmo.
+- Nenhuma renderização contínua quando o espécime está pausado ou em Estrutura. Girar, aproximar, trocar de vista ou ajustar a luz atualiza a imagem e volta a deixá-la em repouso.
+- Estrutura usa linhas sem iluminação, compartilha os vértices do modelo e desenha cada aresta indexada apenas uma vez. As linhas e seu material são preparados uma vez e reutilizados em todas as trocas.
+- Materiais das asas compartilhados, transparência em uma passagem, reflexos em resolução menor e programas gráficos preparados antes da interação.
+
+Em desenvolvimento, `/?profile` registra contadores do renderizador no atributo `data-profile` da visualização para conferir quadros, linhas e recursos. Esse diagnóstico é removido do build de produção.
+
+### Testes de regressão
+
+Com Node.js 22.12+:
+
+```sh
+npm test
+```
+
+Os testes verificam suspensão em repouso e fora de tela, limite em monitores de 144 Hz, orçamento de pixels, adaptação a quadros lentos e 100 trocas de Estrutura sobre o GLB real sem recriar materiais ou alterar sua geometria.
+
 ## Arquivos
 
 - `src/App.tsx`: composição da prancha e controles.
